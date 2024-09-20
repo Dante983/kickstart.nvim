@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -221,16 +221,16 @@ vim.keymap.set('n', 'n', 'nzzzv', opts)
 vim.keymap.set('n', 'N', 'Nzzzv', opts)
 
 -- Window management
-vim.keymap.set('n', '<leader>v', '<C-w>v', opts) -- split window vertically
-vim.keymap.set('n', '<leader>h', '<C-w>s', opts) -- split window horizontally
+vim.keymap.set('n', '<leader>v', '<C-w>v', { desc = 'Split window vertically', noremap = true, silent = true }) -- split window vertically
+vim.keymap.set('n', '<leader>h', '<C-w>s', { desc = 'Split window horizontally', noremap = true, silent = true }) -- split window horizontally
 vim.keymap.set('n', '<leader>se', '<C-w>=', opts) -- make split windows equal width & height
 -- vim.keymap.set('n', '<leader>xs', ':close<CR>', opts) -- close current split windowleader>xs
 
 -- Resize splits
-vim.keymap.set('n', '<leader>+', '<C-w>+', { noremap = true, silent = true }) -- increase height
-vim.keymap.set('n', '<leader>-', '<C-w>-', { noremap = true, silent = true }) -- decrease height
-vim.keymap.set('n', '<leader>>', '<C-w>>', { noremap = true, silent = true }) -- increase width
-vim.keymap.set('n', '<leader><', '<C-w><', { noremap = true, silent = true }) -- decrease width
+vim.keymap.set('n', '<leader>+', '<C-w>+', opts) -- increase height
+vim.keymap.set('n', '<leader>-', '<C-w>-', opts) -- decrease height
+vim.keymap.set('n', '<leader>>', '<C-w>>', opts) -- increase width
+vim.keymap.set('n', '<leader><', '<C-w><', opts) -- decrease width
 
 -- Navigate between splits
 vim.keymap.set('n', '<C-k>', ':wincmd k<CR>', opts)
@@ -262,7 +262,10 @@ vim.keymap.set('n', '<leader>Oq', '<cmd>ObsidianQuickSwitch<CR>', { desc = 'Quic
 -- vim.keymap.set('i', '<C-CR>', function()
 --   require('copilot.panel').accept()
 -- end, { desc = 'Accept Copilot suggestion' })
-vim.keymap.set('n', '<leader>cc', '<cmd>call codeium#Chat()<CR>', { desc = 'Codeium Chat' })
+vim.keymap.set('n', '<leader>co', '<cmd>NeoCodeium chat<CR>', { desc = 'Codeium Chat', noremap = true, silent = true })
+
+-- update mason and lazy
+vim.api.nvim_set_keymap('n', '<leader>u', ':MasonUpdate<CR> | :Lazy update<CR>', { desc = 'update mason and lazy', noremap = true, silent = true })
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -463,25 +466,8 @@ require('lazy').setup({
         --   },
         -- },
         -- pickers = {}
-        defaults = {
-          layout_strategy = 'vertical',
-          layout_config = {
-            preview_height = 0.7,
-            vertical = {
-              width = '95%',
-              height = '95%',
-            },
-          },
-        },
-        pickers = {
-          current_buffer_fuzzy_find = {
-            -- Override the layout strategy and config for current_buffer_fuzzy_find
-            layout_strategy = 'horizontal', -- or any other strategy you prefer
-            layout_config = {
-              preview_width = 0.5, -- example config, adjust as needed
-            },
-          },
-          old_files = {
+        require('telescope').setup {
+          defaults = {
             layout_strategy = 'vertical',
             layout_config = {
               preview_height = 0.7,
@@ -493,33 +479,8 @@ require('lazy').setup({
               },
             },
           },
-          find_files = {
-            layout_strategy = 'vertical',
-            layout_config = {
-              preview_height = 0.7,
-              vertical = {
-                size = {
-                  width = '95%',
-                  height = '95%',
-                },
-              },
-            },
-            file_ignore_patterns = { 'node_modules', '.git', '.venv' },
-            hidden = true,
-          },
         },
-        live_grep = {
-          file_ignore_patterns = { 'node_modules', '.git', '.venv' },
-          additional_args = function(_)
-            return { '--hidden' }
-          end,
-        },
-        extensions = {
-          ['ui-select'] = {
-            require('telescope.themes').get_dropdown(),
-          },
-        },
-        defaults = {},
+        -- defaults = {},
       }
 
       -- Enable Telescope extensions if they are installed
@@ -537,19 +498,22 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>fd', builtin.diagnostics, { desc = '[F]ind [D]iagnostics' })
       vim.keymap.set('n', '<leader>f<CR>', builtin.resume, { desc = '[F]ind [R]esume' })
       vim.keymap.set('n', '<leader>fo', builtin.oldfiles, { desc = '[F]ind Recent Files ("." for repeat)' })
+      vim.keymap.set('n', '<leader>f/', function()
+        builtin.current_buffer_fuzzy_find { exact = true }
+      end, { desc = '[F]ind in current buffer' })
       vim.keymap.set('n', '<leader>fF', function()
         require('telescope.builtin').find_files { hidden = true, no_ignore = true }
       end, { desc = '[F]ind in all files' })
       -- vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
-      vim.keymap.set('n', '<leader>f/', function()
-        -- You can pass additional configuration to Telescope to change the theme, layout, etc.
-        builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-          winblend = 10,
-          previewer = false,
-        })
-      end, { desc = '[/] Fuzzily search in current buffer' })
+      -- vim.keymap.set('n', '<leader>f/', function()
+      --   -- You can pass additional configuration to Telescope to change the theme, layout, etc.
+      --   builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+      --     winblend = 10,
+      --     previewer = false,
+      --   })
+      -- end, { desc = '[/] Fuzzily search in current buffer' })
 
       -- It's also possible to pass additional configuration options.
       --  See `:help telescope.builtin.live_grep()` for information about particular keys
@@ -748,7 +712,12 @@ require('lazy').setup({
           },
         },
         -- clangd = {},
-        -- gopls = {},
+        gopls = {
+          gofumpt = true,
+          usePlaceholders = true,
+          linksInHover = false,
+          templateExtensions = { 'gohtml', 'tmpl', 'html' },
+        },
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -807,49 +776,51 @@ require('lazy').setup({
     end,
   },
 
-  { -- Autoformat
-    'stevearc/conform.nvim',
-    event = { 'BufWritePre' },
-    cmd = { 'ConformInfo' },
-    keys = {
-      {
-        '<leader>f',
-        function()
-          require('conform').format { async = true, lsp_format = 'fallback' }
-        end,
-        mode = '',
-        desc = '[F]ormat buffer',
-      },
-    },
-    opts = {
-      notify_on_error = false,
-      format_on_save = function(bufnr)
-        -- Disable "format_on_save lsp_fallback" for languages that don't
-        -- have a well standardized coding style. You can add additional
-        -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
-        return {
-          timeout_ms = 500,
-          lsp_format = lsp_format_opt,
-        }
-      end,
-      formatters_by_ft = {
-        lua = { 'stylua' },
-        go = { 'gofmt' },
-        -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
-        --
-        -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
-      },
-    },
-  },
+  -- { -- Autoformat
+  --   'stevearc/conform.nvim',
+  --   event = { 'BufWritePre' },
+  --   cmd = { 'ConformInfo' },
+  --   keys = {
+  --     {
+  --       '<leader>f',
+  --       function()
+  --         require('conform').format { async = true, lsp_format = 'fallback' }
+  --       end,
+  --       mode = '',
+  --       desc = '[F]ormat buffer',
+  --     },
+  --   },
+  --   opts = {
+  --     notify_on_error = false,
+  --     format_on_save = function(bufnr)
+  --       -- Disable "format_on_save lsp_fallback" for languages that don't
+  --       -- have a well standardized coding style. You can add additional
+  --       -- languages here or re-enable it for the disabled ones.
+  --       local disable_filetypes = { c = true, cpp = true, go = true, tmpl = true, html = true }
+  --       local lsp_format_opt
+  --       if disable_filetypes[vim.bo[bufnr].filetype] then
+  --         lsp_format_opt = 'never'
+  --       else
+  --         lsp_format_opt = 'fallback'
+  --       end
+  --       return {
+  --         timeout_ms = 500,
+  --         lsp_format = lsp_format_opt,
+  --       }
+  --     end,
+  --     formatters_by_ft = {
+  --       lua = { 'stylua' },
+  --       html = { 'prettierd' },
+  --       templ = { 'templ' },
+  --       go = { 'gofmt', 'goimports' },
+  --       -- Conform can also run multiple formatters sequentially
+  --       -- python = { "isort", "black" },
+  --       --
+  --       -- You can use 'stop_after_first' to run the first available formatter from the list
+  --       -- javascript = { "prettierd", "prettier", stop_after_first = true },
+  --     },
+  --   },
+  -- },
 
   { -- Autocompletion
     'hrsh7th/nvim-cmp',
@@ -1004,7 +975,7 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      -- require('mini.surround').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
