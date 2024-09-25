@@ -28,6 +28,7 @@ return {
       html = { 'prettierd' },
       css = { 'prettierd' },
       tmpl = { 'htmlbeautifier', 'htmlhint' },
+      yaml = { 'yamlfmt' },
     },
     -- Set default options
     default_format_opts = {
