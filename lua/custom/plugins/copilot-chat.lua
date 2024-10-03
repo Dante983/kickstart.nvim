@@ -1,5 +1,56 @@
 return {
   {
+    'zbirenbaum/copilot.lua',
+    cmd = 'Copilot',
+    event = 'InsertEnter',
+    config = function()
+      require('copilot').setup {
+        panel = {
+          enabled = true,
+          auto_refresh = false,
+          keymap = {
+            jump_prev = '[[',
+            jump_next = ']]',
+            accept = '<C-w>',
+            refresh = 'gr',
+            open = '<M-CR>',
+          },
+          layout = {
+            position = 'bottom', -- | top | left | right
+            ratio = 0.4,
+          },
+        },
+        suggestion = {
+          enabled = true,
+          auto_trigger = true,
+          hide_during_completion = true,
+          debounce = 75,
+          keymap = {
+            accept = '<C-w>',
+            accept_word = false,
+            accept_line = false,
+            next = '<M-]>',
+            prev = '<M-[>',
+            dismiss = '<C-]>',
+          },
+        },
+        filetypes = {
+          yaml = false,
+          markdown = false,
+          help = false,
+          gitcommit = false,
+          gitrebase = false,
+          hgcommit = false,
+          svn = false,
+          cvs = false,
+          ['.'] = false,
+        },
+        copilot_node_command = 'node', -- Node.js version must be > 18.x
+        server_opts_overrides = {},
+      }
+    end,
+  },
+  {
     'CopilotC-Nvim/CopilotChat.nvim',
     branch = 'canary',
     event = 'BufEnter',
@@ -24,6 +75,41 @@ return {
         title = 'Copilot Chat', -- title of chat window
         footer = nil, -- footer of chat window
         zindex = 1, -- determines if window is on top or below other floating windows
+      },
+    },
+    mappings = {
+      complete = {
+        detail = 'Use @<Tab> or /<Tab> for options.',
+        insert = '<Tab>',
+      },
+      close = {
+        normal = 'q',
+        insert = '<C-c>',
+      },
+      reset = {
+        normal = '<C-c>',
+        insert = '<C-c>',
+      },
+      submit_prompt = {
+        normal = '<CR>',
+        insert = '<C-s>',
+      },
+      accept_diff = {
+        normal = '<C-y>',
+        insert = '<C-y>',
+      },
+      yank_diff = {
+        normal = 'gy',
+        register = '"',
+      },
+      show_diff = {
+        normal = 'gd',
+      },
+      show_system_prompt = {
+        normal = 'gp',
+      },
+      show_user_selection = {
+        normal = 'gs',
       },
     },
     keys = {

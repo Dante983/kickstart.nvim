@@ -504,6 +504,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>fF', function()
         require('telescope.builtin').find_files { hidden = true, no_ignore = true }
       end, { desc = '[F]ind in all files' })
+      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = '[F]ind Buffers' })
       -- vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
